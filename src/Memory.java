@@ -34,7 +34,7 @@ public class Memory
 		    	}
 		    	else
 		    	{
-		    		inScan.next();
+		    		inScan.nextLine();
 		    	}
 		    }
 		    
@@ -43,16 +43,15 @@ public class Memory
 		    while(sc.hasNext())
 		    {
 		    	int x = sc.nextInt();
-		    	System.out.println(read(x));
 		    	if(x == 1)
 		    	{
 			    	//System.out.println("Memory to read");
-		    		//System.out.println(read(sc.nextInt()));
+		    		System.out.println(read(sc.nextInt()));
 		    	}
 		    	else
 		    	{
 			    	//System.out.println("50");
-		    		//write(sc.nextInt(), sc.nextInt());
+		    		write(sc.nextInt(), sc.nextInt());
 		    	}
 		    }
 		}

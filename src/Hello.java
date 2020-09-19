@@ -2,7 +2,8 @@ public class Hello
 {
    public static void main(String args[])
    {
-      System.out.println("Hello World!");
+	   int x = (int) ((Math.random() * 100) + 1);
+      System.out.println(x);
    }
 
 }
