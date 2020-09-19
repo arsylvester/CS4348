@@ -30,14 +30,31 @@ public class Memory
 		    {
 		    	if( inScan.hasNextInt())
 		    	{
-
 		    		memory[index++] = inScan.nextInt(); 
-		    		System.out.println(memory[index-1]);
 		    	}
 		    	else
+		    	{
 		    		inScan.next();
+		    	}
 		    }
-		    System.out.println("Command is " + memory[0]);
+		    
+		    //System.out.println("This is the memory");
+		    
+		    while(sc.hasNext())
+		    {
+		    	int x = sc.nextInt();
+		    	System.out.println(read(x));
+		    	if(x == 1)
+		    	{
+			    	//System.out.println("Memory to read");
+		    		//System.out.println(read(sc.nextInt()));
+		    	}
+		    	else
+		    	{
+			    	//System.out.println("50");
+		    		//write(sc.nextInt(), sc.nextInt());
+		    	}
+		    }
 		}
 		catch(Throwable e)
 		{
@@ -45,13 +62,13 @@ public class Memory
 		}
 	}
 	
-	public int read(int address)
+	public static int read(int address)
 	{
 		return memory[address];
 		//probably change to a pipe in.
 	}
 	
-	public void write(int address, int data)
+	public static void write(int address, int data)
 	{
 		memory[address] = data;
 	}
