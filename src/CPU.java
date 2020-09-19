@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 public class CPU 
 {
-	static int PC = 0, SP = 0, IR = 0, AC = 0, X = 0, Y = 0;
+	static int PC = 0, SP = 999, IR = 0, AC = 0, X = 0, Y = 0;
 	static PrintWriter pw;
 	static InputStream memToCPU;
 	
@@ -97,12 +97,12 @@ public class CPU
 						//Write AC to screen as an int
 						if(IR == 1)
 						{
-							System.out.println(AC);
+							System.out.print(AC);
 						}
 						//Write AC to screen as an char
 						else
 						{
-							System.out.println((char)AC);
+							System.out.print((char)AC);
 						}
 						break;
 					//AddX
@@ -113,47 +113,90 @@ public class CPU
 					case 11:
 						AC += Y;
 						break;
+					//SubX
 					case 12:
+						AC -= X;
 						break;
+					//SubY
 					case 13:
+						AC -= Y;
 						break;
 					// CopyToX
 					case 14:
 						X = AC;
 						break;
+					//CopyFromX
 					case 15:
+						AC = X;
 						break;
 					//CopyToY
 					case 16:
 						Y = AC;
 						break;
+					//CopyFromY
 					case 17:
+						AC = Y;
 						break;
+					//CopyToSp
 					case 18:
+						SP = AC;
 						break;
+					//CopyFromSp   
 					case 19:
+						AC = SP;
 						break;
+					//Jump addr
 					case 20:
+						readMemory(PC++);
+						PC = IR;
 						break;
+					//JumpIfEqual addr
 					case 21:
+						readMemory(PC++);
+						if(AC == 0)
+							PC = IR;
 						break;
+					//JumpIfNotEqual addr
 					case 22:
+						readMemory(PC++);
+						if(AC != 0)
+							PC = IR;
 						break;
+					//Call addr
 					case 23:
+						writeMemory(SP--, PC);
+						readMemory(PC++);
+						PC = IR;
 						break;
+					//Ret 
 					case 24:
+						readMemory(SP++);
+						PC = IR;
 						break;
+					//IncX 
 					case 25:
+						X++;
 						break;
+					//DecX 
 					case 26:
+						X--;
 						break;
+					//Push
 					case 27:
+						writeMemory(SP--, AC);
 						break;
+					//Pop
 					case 28:
+						readMemory(SP++);
+						AC = IR;
 						break;
+					//Int 
 					case 29:
+						//System call
 						break;
+					//IRet
 					case 30:
+						//return from system call
 						break;
 					//Exit
 					case 50:
