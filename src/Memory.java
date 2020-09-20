@@ -34,11 +34,17 @@ public class Memory
 		    	}
 		    	else
 		    	{
+		    		if(inScan.hasNext("."))
+		    		{
+		    			index = inScan.nextInt();
+		    		}
 		    		inScan.nextLine();
 		    	}
 		    }
 		    
 		    //System.out.println("This is the memory");
+		    //for(int z = 0; z < 30; z++)
+		    //	System.out.println(memory[z]);
 		    
 		    while(sc.hasNext())
 		    {

@@ -12,7 +12,7 @@ public class IO
 	 int x;
 	 Runtime rt = Runtime.getRuntime();
 
-	 Process proc = rt.exec("java HelloYou.java");
+	 Process proc = rt.exec("java Memory.java");
 
 	 OutputStream os = proc.getOutputStream();
 
