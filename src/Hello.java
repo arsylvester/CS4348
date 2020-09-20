@@ -7,7 +7,7 @@ public class Hello
 {
    public static void main(String args[]) throws FileNotFoundException
    {
-	   String fileName = "TestData.txt";
+	   String fileName = "sample1.txt";
 	   int[] memory = new int[2000];
 		
 		// pass the path to the file as a parameter 
@@ -41,8 +41,20 @@ public class Hello
 	    		inScan.nextLine();
 	    	}
 	    }
-	    for(int z = 0; z < 30; z++)
+	    for(int x = 0; x < 100; x++)
+	    {
+	    	System.out.println(memory[x]);
+	    }
+	    System.out.println("At 1000:");
+	    for(int y = 1000; y < 1010; y++)
+	    {
+	    	System.out.println(memory[y]);
+	    }
+	    System.out.println("At 1500:");
+	    for(int z = 1500; z < 1510; z++)
+	    {
 	    	System.out.println(memory[z]);
+	    }
    }
 
 }

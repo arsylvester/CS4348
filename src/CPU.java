@@ -5,25 +5,34 @@ import java.util.Scanner;
 
 public class CPU 
 {
-	static int PC = 0, SP = 999, IR = 0, AC = 0, X = 0, Y = 0, timer;
+	//Initializes most variables and 'registers'. I know having most of these be static isn't the most proper java/OOP practice, but nor is processes and pipes in java and this project isn't supposed to demonstrate anything OOP. 
+	//So I'm doing this to keep things clean and have functions access them.
+	static int PC = 0, SP = 0, IR = 0, AC = 0, X = 0, Y = 0, timer;
 	static Boolean kernel = false;
-	static final int TIMER_INTER_LOC = 1000, INT_INSTR_LOC = 1500, SYSTEM_STACK = 1999;
+	static final int TIMER_INTER_LOC = 1000, INT_INSTR_LOC = 1500, USER_STACK = 1000, SYSTEM_STACK = 2000;
 	static PrintWriter pw;
 	static InputStream memToCPU;
+	static OutputStream cpuToMem;
+	static Process memory;
 	
 	public static void main(String[] args) 
 	{
 		try 
 		{
+			//Initialize timer and timer max
 			timer = Integer.parseInt(args[1]);
 			int timerMax = timer;
 			
+			//Initialize stack to user stack. 
+			//NOTE on SP. Any time something is pushed to stack will --SP, any time popping using SP++. So SP points to the top element, not the one after it.
+			SP = USER_STACK;
+			
 			//Start another java process to act as our memory.
 			Runtime rt = Runtime.getRuntime();
-			Process memory = rt.exec("java Memory.java");
+			memory = rt.exec("java Memory.java");
 			
 			//CPU To Memory pipe
-			OutputStream cpuToMem = memory.getOutputStream();
+			cpuToMem = memory.getOutputStream();
 			// Memory To CPU pipe
 			memToCPU = memory.getInputStream();
 			
@@ -44,9 +53,9 @@ public class CPU
 			//Get instruction from memory. This will be our core loop.
 			while (IR != 50)
 			{
-				if(timer <= 0)
+				if(timer <= 0 && !kernel)
 				{
-					IR = 30;
+					IR = 29;
 				}
 				else
 				{
@@ -86,11 +95,10 @@ public class CPU
 						break;
 					//LoadSpX
 					case 6:
-						readMemory(PC++);
-						readMemory(IR + SP);
+						readMemory(SP + X);
 						AC = IR;
 						break;
-					//LoadSpX
+					//Store addr
 					case 7:
 						readMemory(PC++);
 						writeMemory(IR, AC);
@@ -173,7 +181,7 @@ public class CPU
 						break;
 					//Call addr
 					case 23:
-						writeMemory(SP--, PC);
+						writeMemory(--SP, PC);
 						readMemory(PC++);
 						PC = IR;
 						break;
@@ -192,7 +200,7 @@ public class CPU
 						break;
 					//Push
 					case 27:
-						writeMemory(SP--, AC);
+						writeMemory(--SP, AC);
 						break;
 					//Pop
 					case 28:
@@ -206,15 +214,18 @@ public class CPU
 						{
 							break;
 						}
-						int tempSP = SP;
-						SP = SYSTEM_STACK;
-						writeMemory(SP--, tempSP);
-						writeMemory(SP--, PC);
-						writeMemory(SP--, AC);
-						writeMemory(SP--, X);
-						writeMemory(SP--, Y);
 						kernel = true;
 						
+						//Push registers to system stack. Also pushing AC, X, and Y in case user program was using them, we don't want to override when we return.
+						int tempSP = SP;
+						SP = SYSTEM_STACK;
+						writeMemory(--SP, tempSP);
+						writeMemory(--SP, PC);
+						writeMemory(--SP, AC);
+						writeMemory(--SP, X);
+						writeMemory(--SP, Y);
+						
+						//Check if a timer interrupt or system call
 						if(timer <= 0)
 						{
 							PC = TIMER_INTER_LOC;
@@ -231,7 +242,6 @@ public class CPU
 						{
 							break;
 						}
-
 						readMemory(SP++);
 						Y = IR;
 						readMemory(SP++);
@@ -242,8 +252,10 @@ public class CPU
 						PC = IR;
 						readMemory(SP++);
 						SP = IR;
+						
 						kernel = false;
 						
+						// If return from timer interrupt than reset timer
 						if(timer <= 0)
 						{
 							timer = timerMax;
@@ -270,9 +282,9 @@ public class CPU
 
 			memory.waitFor();
 
-			int exitVal = memory.exitValue();
+			//int exitVal = memory.exitValue();
 
-			System.out.println("Process exited: " + exitVal);
+			//System.out.println("Process exited: " + exitVal);
 
 		} 
 		catch (Throwable t) 
@@ -285,6 +297,20 @@ public class CPU
 	{
 		try
 		{
+			//Check if trying to access system memory when not able to
+			if(address >= 1000 && !kernel)
+			{
+				System.out.println("Memory violation: accessing system address " + address + " in user mode");
+				//clean up and exit
+				pw.flush();
+				pw.close();
+				cpuToMem.close();
+				memToCPU.close();
+
+				memory.waitFor();
+				System.exit(0);
+			}
+			
 			//Read next instruction
 			pw.println(1);
 			pw.println(address);
@@ -317,6 +343,20 @@ public class CPU
 	{
 		try
 		{
+			//Check if trying to access system memory when not able to
+			if(address >= 1000 && !kernel)
+			{
+				System.out.println("Memory violation: accessing system address " + address + " in user mode");
+				//clean up and exit
+				pw.flush();
+				pw.close();
+				cpuToMem.close();
+				memToCPU.close();
+
+				memory.waitFor();
+				System.exit(0);
+			}
+			
 			//Write value at address
 			pw.println(0);
 			pw.println(address);
