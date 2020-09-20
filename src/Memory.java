@@ -34,9 +34,19 @@ public class Memory
 		    	}
 		    	else
 		    	{
-		    		if(inScan.hasNext("."))
+		    		if(inScan.hasNext("\\..*"))
 		    		{
-		    			index = inScan.nextInt();
+		    			try 
+		    			{
+		    				//Get the string after the . and convert to int.
+			    			int newAddress = Integer.parseInt(inScan.next().substring(1));
+			    			//System.out.println(newAddress);
+			    			index = newAddress;
+		    			}
+		    			catch(Throwable e)
+		    			{
+		    				//System.out.println("Not an int");
+		    			}
 		    		}
 		    		inScan.nextLine();
 		    	}

@@ -24,16 +24,19 @@ public class Hello
 	    	}
 	    	else
 	    	{
-	    		 Pattern pattern = Pattern.compile("\\..*");  
-	    		if(inScan.hasNext("^\\."))
+	    		// Pattern pattern = Pattern.compile("\\..*");  
+	    		if(inScan.hasNext("\\..*"))
 	    		{
-	    			System.out.println(inScan.next());
-	    			//index = inScan.nextInt();
-	    		}
-	    		if(inScan.hasNext(pattern))
-	    		{
-	    			System.out.println(inScan.next());
-	    			//index = inScan.nextInt();
+	    			try 
+	    			{
+		    			int newAddress = Integer.parseInt(inScan.next().substring(1));
+		    			//System.out.println(newAddress);
+		    			index = newAddress;
+	    			}
+	    			catch(Throwable e)
+	    			{
+	    				//System.out.println("Not an int");
+	    			}
 	    		}
 	    		inScan.nextLine();
 	    	}

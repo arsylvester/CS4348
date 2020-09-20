@@ -5,7 +5,9 @@ import java.util.Scanner;
 
 public class CPU 
 {
-	static int PC = 0, SP = 999, IR = 0, AC = 0, X = 0, Y = 0;
+	static int PC = 0, SP = 999, IR = 0, AC = 0, X = 0, Y = 0, timer;
+	static Boolean kernel = false;
+	static final int TIMER_INTER_LOC = 1000, INT_INSTR_LOC = 1500, SYSTEM_STACK = 1999;
 	static PrintWriter pw;
 	static InputStream memToCPU;
 	
@@ -13,7 +15,8 @@ public class CPU
 	{
 		try 
 		{
-			//int PC = 0, SP = 0, IR = 0, AC = 0, X = 0, Y = 0;
+			timer = Integer.parseInt(args[1]);
+			int timerMax = timer;
 			
 			//Start another java process to act as our memory.
 			Runtime rt = Runtime.getRuntime();
@@ -39,10 +42,16 @@ public class CPU
 
 			String value;
 			//Get instruction from memory. This will be our core loop.
-			while (PC < 30 && IR != 50)
+			while (IR != 50)
 			{
-				readMemory(PC++);
-				
+				if(timer <= 0)
+				{
+					IR = 30;
+				}
+				else
+				{
+					readMemory(PC++);
+				}
 				switch(IR)
 				{
 					//Load value
@@ -192,17 +201,65 @@ public class CPU
 						break;
 					//Int 
 					case 29:
-						//System call
+						//Check we are not already handling an interrupt
+						if(kernel)
+						{
+							break;
+						}
+						int tempSP = SP;
+						SP = SYSTEM_STACK;
+						writeMemory(SP--, tempSP);
+						writeMemory(SP--, PC);
+						writeMemory(SP--, AC);
+						writeMemory(SP--, X);
+						writeMemory(SP--, Y);
+						kernel = true;
+						
+						if(timer <= 0)
+						{
+							PC = TIMER_INTER_LOC;
+						}
+						else
+						{
+							PC = INT_INSTR_LOC;
+						}
 						break;
 					//IRet
 					case 30:
-						//return from system call
+						//Check we are in an interrupt
+						if(!kernel)
+						{
+							break;
+						}
+
+						readMemory(SP++);
+						Y = IR;
+						readMemory(SP++);
+						X = IR;
+						readMemory(SP++);
+						AC = IR;
+						readMemory(SP++);
+						PC = IR;
+						readMemory(SP++);
+						SP = IR;
+						kernel = false;
+						
+						if(timer <= 0)
+						{
+							timer = timerMax;
+						}
 						break;
 					//Exit
 					case 50:
 						break;
 					default:
 						break;
+					
+				}
+				//Only decrease the timer if handling user instructions, not an interrupt
+				if(!kernel)
+				{
+					timer--;
 				}
 			}
 			//clean up and exit
@@ -271,5 +328,4 @@ public class CPU
 			t.printStackTrace();
 		}
 	}
-
 }
