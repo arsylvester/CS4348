@@ -29,7 +29,7 @@ public class CPU
 			
 			//Start another java process to act as our memory.
 			Runtime rt = Runtime.getRuntime();
-			memory = rt.exec("java Memory.java");
+			memory = rt.exec("java Memory");
 			
 			//CPU To Memory pipe
 			cpuToMem = memory.getOutputStream();
@@ -258,7 +258,7 @@ public class CPU
 						// If return from timer interrupt than reset timer
 						if(timer <= 0)
 						{
-							timer = timerMax;
+							timer = timerMax + 1; //We do + 1 because the timer will be decreased at the end of the IRet instruction since we are no longer in kernel mode, but we want to start counting down on the next user instruction.
 						}
 						break;
 					//Exit

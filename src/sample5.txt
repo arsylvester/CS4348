@@ -1,0 +1,67 @@
+//This input prints the Fibonacci Sequence from n = 0 to n = 14, which should be 0 1 1 2 3 5 8 13 21 34 55 89 144 233 377.
+//Registers X and Y are used more than really needed to show that when there is an interrupt that the user program should not change.
+//So I recomend having the timer being something smaller like 5.
+
+//Core loop is in general
+//Add X and Y in AC
+//print
+//Load Y into X
+//Load AC into Y
+//Repeat n times
+
+//First set up 0 and 1
+1 //Load 0 into AC
+0
+9 //Print
+1
+14 //Load 0 into X
+1 //load space 
+32
+9 //print
+2
+1 //Load 1 into AC
+1
+9 //print
+1
+16 //Load 1 into Y
+1 //load space 
+32
+9 //print
+2
+
+//Core loop
+1 //Clean AC
+0
+10 //Add X
+11 //Add Y
+9 //Print
+1
+27 //push
+1 //load space 
+32
+9 //print
+2
+17 //Copy from Y
+14 //Copy to X
+28 //Pop
+16 //Copy to Y
+1 //Load 377 (our stop number)
+377
+13 //Sub Y
+22 //loop if AC is not 0 (So loop until we reach 377, or Fibonacci number when n = 14)
+18
+
+50 //exit
+
+.1000 //This interrupt handler will change the values of X, Y, and AC to show that changes during an interrupt should not affect the user program.
+1 //Load 19 into X
+19
+14
+1 //Load 378 into Y
+378
+16
+29 //Perform a system call, but it should do nothing as we are already in an interrupt.
+25 //Increase X
+1 // Load 123 into the AC
+123
+30 return

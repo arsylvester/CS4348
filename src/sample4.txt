@@ -3,7 +3,7 @@
 1
 1	//Load 10
 10
-9
+9	//Print line return
 2
 27   // push
 19   // CopyFromSp

@@ -10,7 +10,7 @@ public class Proc
 	 int x;
 	 Runtime rt = Runtime.getRuntime();
 
-	 Process proc = rt.exec("java Hello.java");
+	 Process proc = rt.exec("java Hello");
 	 //Process proc = rt.exec("cat hello.java");
 
 	 InputStream os = proc.getInputStream();
