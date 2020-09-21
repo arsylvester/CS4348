@@ -1,14 +1,19 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.OutputStream;
 import java.util.Scanner;
 import java.util.regex.*;
 
 public class Hello2
 {
+	static int[] memory = new int[2000];
+	static OutputStream os;
+	
    public static void main(String args[]) throws FileNotFoundException
    {
-	   String fileName = "sample1.txt";
-	   int[] memory = new int[2000];
+	   try
+	   {
+	   String fileName = args[0];
 		
 		// pass the path to the file as a parameter 
 	    File file = 
@@ -55,6 +60,26 @@ public class Hello2
 	    {
 	    	System.out.println(memory[z]);
 	    }
-   }
+	    System.out.println();
+	    System.out.println(read(0));
+	    write(5, 13);
+	    System.out.println(read(5));
+	}
+	catch(Throwable e)
+	{
+		e.printStackTrace();
+	}
+}
+
+	public static int read(int address)
+	{
+		return memory[address];
+		//probably change to a pipe in.
+	}
+	
+	public static void write(int address, int data)
+	{
+		memory[address] = data;
+	}
 
 }
