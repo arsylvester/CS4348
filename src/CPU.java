@@ -319,14 +319,18 @@ public class CPU
 			
 			//Get bytes from memory and convert to int
 			IR = memToCPU.read();
-			while(IR != 13)
+			do
 			{
 				value += (char)IR;
 				IR = memToCPU.read();
 			}
+			while(IR != 13 && IR != 10);
 			
-			//Skip over the line return
-			memToCPU.skip(1);
+			//For Some reason windows gets the bytes 13 then 10 at the end of the instructions, but Linux only finds the 10 (new line). So this check is skips the 10 if using windows.
+			if(IR == 13)
+			{
+				memToCPU.skip(1);
+			}
 			
 			//Set IR to instruction value.
 			IR = Integer.parseInt(value);
