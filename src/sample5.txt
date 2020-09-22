@@ -50,7 +50,10 @@
 13 //Sub Y
 22 //loop if AC is not 0 (So loop until we reach 377, or Fibonacci number when n = 14)
 18
-
+1 //Print newline
+10
+9
+2
 50 //exit
 
 .1000 //This interrupt handler will change the values of X, Y, and AC to show that changes during an interrupt should not affect the user program.

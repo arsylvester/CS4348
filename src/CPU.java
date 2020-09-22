@@ -1,7 +1,9 @@
+//CPU.java created by Andrew Sylvester for CS 4348
+//This code creates the separate process Memory.java. Then through communication with the memory is runs the instructions of the memory. Every x instructions an interrupt is handled.
+import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.Scanner;
 
 public class CPU 
 {
@@ -22,6 +24,11 @@ public class CPU
 			//Initialize timer and timer max
 			timer = Integer.parseInt(args[1]);
 			int timerMax = timer;
+			if(timer <= 0)
+			{
+				System.out.println("Please provide a timer greater than 0.");
+				System.exit(0);
+			}
 			
 			//Initialize stack to user stack. 
 			//NOTE on SP. Any time something is pushed to stack will --SP, any time popping using SP++. So SP points to the top element, not the one after it.
@@ -39,17 +46,21 @@ public class CPU
 			//Print writer to write to Memory.
 			pw = new PrintWriter(cpuToMem);
 			
-			//Send the name of the input text file for memory to read
+			//Test that input file is valid
 			String fileName = args[0];
-			pw.printf(fileName + "\n");
-			//pw.println("0");
-			//pw.println("1");
-			//pw.println("2");
-			pw.flush();
+		    File testFile = new File(fileName); 
+		    if(testFile.exists())
+		    {
+		    	//Send the name of the input text file for memory to read
+		    	pw.printf(fileName + "\n");
+				pw.flush();
+		    }
+		    else
+		    {
+		    	System.out.println("Input file not found.");
+				System.exit(0);
+		    }
 
-
-
-			String value;
 			//Get instruction from memory. This will be our core loop.
 			while (IR != 50)
 			{
@@ -255,11 +266,6 @@ public class CPU
 						
 						kernel = false;
 						
-						// If return from timer interrupt than reset timer
-						if(timer <= 0)
-						{
-							timer = timerMax + 1; //We do + 1 because the timer will be decreased at the end of the IRet instruction since we are no longer in kernel mode, but we want to start counting down on the next user instruction.
-						}
 						break;
 					//Exit
 					case 50:
@@ -268,10 +274,10 @@ public class CPU
 						break;
 					
 				}
-				//Only decrease the timer if handling user instructions, not an interrupt
-				if(!kernel)
+				//Check if timer is 0, if so reset. After check decrease timer. Originally had it only decrease !kernel, but the Professor said to have it count down even during interrupts, just won't do anything.
+				if(timer-- <= 0)
 				{
-					timer--;
+					timer = timerMax; 
 				}
 			}
 			//clean up and exit

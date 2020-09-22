@@ -1,3 +1,5 @@
+//Memory.java created by Andrew Sylvester for CS 4348
+//This code is created as a separate process by CPU.java. It reads an input file and stores it into an array. Then when the cpu requests it will either read or write to that array.
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -20,11 +22,11 @@ public class Memory
 			if (sc.hasNext())
 			   fileName = sc.nextLine(); 	
 			
-			// pass the path to the file as a parameter 
-		    File file = 
-		      new File(fileName); 
+			//Pass the path to the file as a parameter 
+		    File file = new File(fileName); 
 		    Scanner inScan = new Scanner(file); 
 		  
+		    //Loop through input file gathering instructions
 		    int index = 0;
 		    while (inScan.hasNext()) 
 		    {
@@ -34,13 +36,13 @@ public class Memory
 		    	}
 		    	else
 		    	{
+		    		//Check if memory location to store system calls
 		    		if(inScan.hasNext("\\..*"))
 		    		{
 		    			try 
 		    			{
 		    				//Get the string after the . and convert to int.
 			    			int newAddress = Integer.parseInt(inScan.next().substring(1));
-			    			//System.out.println(newAddress);
 			    			index = newAddress;
 		    			}
 		    			catch(Throwable e)
@@ -52,18 +54,16 @@ public class Memory
 		    	}
 		    }
 		    
-		    //System.out.println("This is the memory");
-		    //for(int z = 0; z < 30; z++)
-		    //	System.out.println(memory[z]);
-		    
+		    //Loop until CPU is done processing instructions
 		    while(sc.hasNext())
 		    {
 		    	int x = sc.nextInt();
+		    	//Read memory
 		    	if(x == 1)
 		    	{
-			    	//System.out.println("Memory to read");
 		    		System.out.println(read(sc.nextInt()));
 		    	}
+		    	//Write memory
 		    	else
 		    	{
 			    	//System.out.println("50");
@@ -80,7 +80,6 @@ public class Memory
 	public static int read(int address)
 	{
 		return memory[address];
-		//probably change to a pipe in.
 	}
 	
 	public static void write(int address, int data)
